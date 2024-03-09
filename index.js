@@ -5,7 +5,23 @@ import authRouter from "./route/auth.js";
 import connectDatabase from "./utils/db.js";
 import UsersRouter from "./route/users.js";
 import ChatRouter from "./route/chat.js";
+import { createServer } from "http";
+import { Server } from "socket.io";
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.FRONTEND,
+  },
+});
+io.on("connection", (socket) => {
+  socket.on("registerid", ({ id }) => {
+    socket.join(id);
+  });
+  socket.on("personalmessage", ({ message, to, from }) => {
+    socket.to(to).emit("personalmessage", { message, from, to });
+  });
+});
 connectDatabase();
 app.use(
   cors({
@@ -16,6 +32,6 @@ app.use(express.json());
 app.use("/api", authRouter);
 app.use("/api", UsersRouter);
 app.use("/api", ChatRouter);
-app.listen(process.env.PORT, () => {
+httpServer.listen(process.env.PORT, () => {
   console.log(`Server is running`);
 });

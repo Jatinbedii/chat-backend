@@ -16,4 +16,18 @@ async function SendMessage(req, res) {
     res.json({ error: "Unexpected Error" });
   }
 }
-export { SendMessage };
+
+async function GetChat(req, res) {
+  const userone = req.params.userid;
+  const usertwo = req.body.id;
+
+  const messages = await Message.find({
+    $or: [
+      { from: userone, to: usertwo },
+      { from: usertwo, to: userone },
+    ],
+  }).exec();
+
+  res.json(messages);
+}
+export { GetChat, SendMessage };
