@@ -4,6 +4,9 @@ import { createToken } from "../utils/jwt.js";
 
 async function LoginController(req, res) {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.json({ error: "Fill all the fields" });
+  }
 
   try {
     const user = await User.findOne({ username });
@@ -20,7 +23,15 @@ async function LoginController(req, res) {
 
 async function RegisterController(req, res) {
   const { username, email, password } = req.body;
-  console.log(password);
+
+  if (!username || !email || !password) {
+    return res.json({ error: "fill all the fields" });
+  }
+
+  let pattern = /[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/;
+  if (pattern.test(username)) {
+    return res.json({ error: "Username must include only A-Z to 0-9 letters" });
+  }
   const byusername = await User.findOne({ username });
   if (byusername) {
     return res.json({ error: "Username already exist" });

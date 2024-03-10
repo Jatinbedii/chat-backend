@@ -5,4 +5,12 @@ async function Users(req, res) {
   res.json(users);
 }
 
-export { Users };
+async function SingleUser(req, res) {
+  try {
+    const user = await User.findById(req.params.id);
+    res.json(user);
+  } catch (error) {
+    res.json({ error: "No such user exist" });
+  }
+}
+export { Users, SingleUser };
