@@ -16,7 +16,23 @@ async function SendMessage(req, res) {
     res.json({ error: "Unexpected Error" });
   }
 }
+async function SendImage(req, res) {
+  try {
+    const { id, to, message, type } = req.body;
 
+    const myMessage = Message({
+      message,
+      from: id,
+      to: to,
+      type,
+    });
+    await myMessage.save();
+    res.status(201).json({ message: "saved" });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: "Unexpected Error" });
+  }
+}
 async function GetChat(req, res) {
   const userone = req.params.userid;
   const usertwo = req.body.id;
@@ -30,4 +46,4 @@ async function GetChat(req, res) {
 
   res.json(messages);
 }
-export { GetChat, SendMessage };
+export { SendImage, GetChat, SendMessage };

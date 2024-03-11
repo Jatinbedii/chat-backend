@@ -18,8 +18,8 @@ io.on("connection", (socket) => {
   socket.on("registerid", ({ id }) => {
     socket.join(id);
   });
-  socket.on("personalmessage", ({ message, to, from }) => {
-    socket.to(to).emit("personalmessage", { message, from, to });
+  socket.on("personalmessage", ({ message, to, from, type }) => {
+    socket.to(to).emit("personalmessage", { message, from, type, to });
   });
 });
 connectDatabase();
