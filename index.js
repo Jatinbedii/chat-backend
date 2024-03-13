@@ -23,6 +23,9 @@ io.on("connection", (socket) => {
   socket.on("personalmessage", ({ message, to, from, type }) => {
     socket.to(to).emit("personalmessage", { message, from, type, to });
   });
+  socket.on("callcut", ({ to }) => {
+    socket.to(map.get(to)).emit("callcut");
+  });
   socket.on("call", ({ to, from, peerid }) => {
     if (!map.has(to)) {
       socket.emit("offline");
