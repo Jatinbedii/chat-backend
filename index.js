@@ -8,6 +8,7 @@ import ChatRouter from "./route/chat.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 let map = new Map();
+let peermap = new Map();
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -31,7 +32,11 @@ io.on("connection", (socket) => {
       socket.emit("offline");
       return;
     }
+    peermap.set(peerid, socket.id);
     socket.to(map.get(to)).emit("callcoming", { peerid, from });
+  });
+  socket.on("callcutclient", ({ peer }) => {
+    socket.to(peermap.get(peer)).emit("callcutfromclient");
   });
   socket.on("disconnect", () => {
     let temp = socket.id;
