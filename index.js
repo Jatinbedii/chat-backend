@@ -7,6 +7,7 @@ import UsersRouter from "./route/users.js";
 import ChatRouter from "./route/chat.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
+let map = new Map();
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -17,9 +18,25 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
   socket.on("registerid", ({ id }) => {
     socket.join(id);
+    map.set(id, socket.id);
   });
   socket.on("personalmessage", ({ message, to, from, type }) => {
     socket.to(to).emit("personalmessage", { message, from, type, to });
+  });
+  socket.on("call", ({ to, from, peerid }) => {
+    if (!map.has(to)) {
+      socket.emit("offline");
+      return;
+    }
+    socket.to(map.get(to)).emit("callcoming", { peerid, from });
+  });
+  socket.on("disconnect", () => {
+    let temp = socket.id;
+    for (let [id, socketid] of map.entries()) {
+      if (temp == socketid) {
+        map.delete(id);
+      }
+    }
   });
 });
 connectDatabase();
