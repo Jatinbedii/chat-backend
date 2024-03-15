@@ -13,4 +13,16 @@ async function SingleUser(req, res) {
     res.json({ error: "No such user exist" });
   }
 }
-export { Users, SingleUser };
+async function ChangePFP(req, res) {
+  try {
+    const { id, image } = req.body;
+    const user = await User.findById(id);
+    user.profile = image;
+    await user.save();
+
+    res.json(user);
+  } catch (error) {
+    res.json({ error: "unexpected error" });
+  }
+}
+export { ChangePFP, Users, SingleUser };
